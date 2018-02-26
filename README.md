@@ -1,3 +1,7 @@
+# This is a fork of agnoster
+
+It adds a remote ahead/behind segment as shown in the screenshot below.
+
 # agnoster.zsh-theme
 
 A ZSH theme optimized for people who use:
