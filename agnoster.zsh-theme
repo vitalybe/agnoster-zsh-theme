@@ -142,9 +142,12 @@ prompt_git() {
       if [ $behind -ne 0 ]; then
         prompt_segment magenta white
         echo -n " $remote (-$behind)"
-      else
+      elif [ $behind -ne 0 ]; then
         prompt_segment cyan black
         echo -n " $remote (+$ahead)"
+      else 
+        prompt_segment green black
+        echo -n " $remote"
       fi
     fi
 
