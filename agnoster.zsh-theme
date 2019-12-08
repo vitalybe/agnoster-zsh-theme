@@ -94,10 +94,46 @@ prompt_git() {
   }
   local ref dirty mode repo_path
   repo_path=$(git rev-parse --git-dir 2>/dev/null)
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
 
   if $(git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
+
+    # Displaying upstream dedicated segment
+    ref_symbol=""
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+    remote=${remote:gs/origin\//}
+    if [[ -n ${remote} ]] ; then
+      ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
+      displayed_ahead=" (+${ahead})"
+      behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')
+    else
+      ahead=""
+      displayed_ahead=""
+      behind=""
+    fi
+
+    if [[ -n $remote ]]; then
+      if [ $behind -ne 0 ]; then
+        prompt_segment magenta white
+        echo -n "-$behind"
+      fi
+
+      if [ $ahead -ne 0 ]; then
+        prompt_segment cyan black
+        echo -n "+$ahead"
+      fi
+
+      if [[ "$remote" = "${ref/refs\/heads\/}" ]]; then
+        prompt_segment green black
+        echo -n "⛅️"
+      else
+        prompt_segment green black
+        echo -n " $remote"
+      fi
+    fi
+
+    # Dirty/clean segment
     dirty=$(parse_git_dirty)
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
     if [[ -n $dirty ]]; then
       prompt_segment yellow black
     else
@@ -112,18 +148,6 @@ prompt_git() {
       mode=" >R>"
     fi
 
-    ref_symbol=""
-    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
-    if [[ -n ${remote} ]] ; then
-      ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l | tr -d ' ')
-      displayed_ahead=" (+${ahead})"
-      behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l | tr -d ' ')
-    else
-      ahead=""
-      displayed_ahead=""
-      behind=""
-    fi
-
     setopt promptsubst
     autoload -Uz vcs_info
 
@@ -136,21 +160,6 @@ prompt_git() {
     zstyle ':vcs_info:*' actionformats ' %u%c'
     vcs_info
     echo -n "${ref/refs\/heads\//$PL_BRANCH_CHAR }${vcs_info_msg_0_%% }${mode}"
-
-    # Displaying upstream dedicated segment
-    if [[ -n $remote ]]; then
-      if [ $behind -ne 0 ]; then
-        prompt_segment magenta white
-        echo -n " $remote (-$behind)"
-      elif [ $ahead -ne 0 ]; then
-        prompt_segment cyan black
-        echo -n " $remote (+$ahead)"
-      else 
-        prompt_segment green black
-        echo -n " $remote"
-      fi
-    fi
-
   fi
 }
 
