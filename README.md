@@ -1,6 +1,8 @@
 # This is a fork of agnoster
 
-It adds a remote ahead/behind segment as shown in the screenshot below.
+It adds a remote ahead/behind segment as shown in the screenshot below:
+
+![Screenshot](screenshot.png?raw=true)
 
 # agnoster.zsh-theme
 
@@ -30,8 +32,6 @@ To test if your terminal and font support it, check that all the necessary chara
   - Dirty working directory (±, color change)
 - Working directory
 - Elevated (root) privileges (⚡)
-
-![Screenshot](screenshot.png?raw=true)
 
 ## Future Work
 
