@@ -2,7 +2,7 @@
 
 It adds a remote ahead/behind segment as shown in the screenshot below:
 
-![Screenshot](screenshot.png?raw=true)
+![Screenshot](screenshot2.png?raw=true)
 
 # agnoster.zsh-theme
 
